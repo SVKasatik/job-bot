@@ -1,39 +1,44 @@
-# main.py
-
 import time
-from scraper.stepstone import search_stepstone_jobs
-from scraper.indeed import search_indeed_jobs
+from scraper.remoteok import search_remoteok_jobs
+from scraper.arbeitnow import search_arbeitnow_jobs
 from generator import generate_cover_letter
-from sender import send_email
+# from sender import send_email  ← временно отключено
 
 KEYWORDS = ["Design", "System"]
-LOCATION = "Berlin"
 CHECK_INTERVAL = 1800  # 30 минут
-
-# для теста можно вставить email напрямую
 TEST_EMAIL = "svk3004@gmail.com"
 
 def main():
+    print("[DEBUG] Парсим RemoteOK...")
     print("[INFO] Job Bot started")
-    while True:
-        jobs = search_indeed_jobs(KEYWORDS, LOCATION)
-        for job in jobs:
-            print(f"[FOUND] {job['title']} @ {job['company']}")
-            # временно указываем email вручную
-            job["contact_email"] = TEST_EMAIL
-            letter = generate_cover_letter(job)
-            send_email(job["contact_email"], letter, job)
 
-        jobs_stepstone = search_stepstone_jobs(KEYWORDS, LOCATION)
-        for job in jobs_stepstone:
-            print(f"[FOUND] (StepStone) {job['title']} @ {job['company']}")
-            job["contact_email"] = TEST_EMAIL
-            letter = generate_cover_letter(job)
-            send_email(job["contact_email"], letter, job)
+    jobs = search_remoteok_jobs(KEYWORDS)
+    print(f"[INFO] Получено {len(jobs)} вакансий")
 
+    for job in jobs:
+        print(f"[FOUND] {job['title']} @ {job['company']}")
+        job["contact_email"] = TEST_EMAIL
+        letter = generate_cover_letter(job)
+        print(f"\n--- COVER LETTER for {job['title']} @ {job['company']} ---\n")
+        print(letter)
+        print("\n---------------------------------------------\n")
+        # send_email(job["contact_email"], letter, job)
 
-        print(f"[WAIT] Sleeping for {CHECK_INTERVAL / 60} minutes...")
-        time.sleep(CHECK_INTERVAL)
+    print("[DEBUG] Парсим Arbeitnow...")
+    jobs = search_arbeitnow_jobs(KEYWORDS)
+    print(f"[INFO] Получено {len(jobs)} вакансий")
+
+    for job in jobs:
+        print(f"[FOUND] {job['title']} @ {job['company']}")
+        job["contact_email"] = TEST_EMAIL
+        letter = generate_cover_letter(job)
+        print(f"\n--- COVER LETTER for {job['title']} @ {job['company']} ---\n")
+        print(letter)
+        print("\n---------------------------------------------\n")
+        # send_email(job["contact_email"], letter, job)
+
+    print(f"[WAIT] Sleeping for {CHECK_INTERVAL / 60} minutes...")
+    time.sleep(CHECK_INTERVAL)
 
 if __name__ == "__main__":
     main()
