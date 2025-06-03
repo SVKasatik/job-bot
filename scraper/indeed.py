@@ -19,7 +19,7 @@ def search_indeed_jobs(keywords, location="Berlin"):
     driver.get(url)
 
     # Дать сайту время загрузиться (обходит Cloudflare/JS защиту)
-    time.sleep(5)
+    time.sleep(10)
 
     results = []
     job_cards = driver.find_elements(By.CLASS_NAME, "tapItem")
@@ -41,4 +41,6 @@ def search_indeed_jobs(keywords, location="Berlin"):
             continue
 
     driver.quit()
+    print(f"[INFO] Found {len(results)} jobs on Indeed")
+
     return results
