@@ -1,0 +1,10 @@
+Sehr geehrte Damen und Herren,
+
+mit großem Interesse habe ich Ihre Stellenanzeige für die Position als {{ job_title }} bei {{ company }} gelesen. Mein beruflicher Hintergrund als Designer und meine technischen Kenntnisse machen mich zu einer geeigneten Kandidatin.
+
+Ich bin besonders motiviert, in einem innovativen Umfeld wie {{ company }} zu arbeiten und meine Fähigkeiten im Bereich Design Systems und UI/UX weiterzuentwickeln.
+
+Gerne sende ich Ihnen im Anhang meinen Lebenslauf zu und freue mich auf die Möglichkeit eines persönlichen Gesprächs.
+
+Mit freundlichen Grüßen  
+Dein Name
