@@ -1,37 +1,44 @@
 # scraper/indeed.py
 
-import requests
-from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+import time
 
 def search_indeed_jobs(keywords, location="Berlin"):
     query = "+".join(keywords)
     url = f"https://de.indeed.com/jobs?q={query}&l={location}"
 
-    headers = {
-        "User-Agent": "Mozilla/5.0"
-    }
+    # Настройка браузера
+    options = Options()
+    # options.add_argument("--headless")  # убрать, если хочешь видеть браузер
+    options.add_argument("--disable-gpu")
+    options.add_argument("--window-size=1920x1080")
 
-    response = requests.get(url, headers=headers)
-    if response.status_code != 200:
-        print("[ERROR] Не удалось загрузить Indeed")
-        return []
+    driver = webdriver.Chrome(options=options)
+    driver.get(url)
 
-    soup = BeautifulSoup(response.text, "html.parser")
-    job_cards = soup.find_all("a", class_="tapItem")
+    # Дать сайту время загрузиться (обходит Cloudflare/JS защиту)
+    time.sleep(5)
 
     results = []
+    job_cards = driver.find_elements(By.CLASS_NAME, "tapItem")
+
     for card in job_cards:
-        title = card.find("h2", class_="jobTitle")
-        company = card.find("span", class_="companyName")
-        link = card["href"]
-        full_link = f"https://de.indeed.com{link}"
+        try:
+            title = card.find_element(By.CLASS_NAME, "jobTitle").text
+            company = card.find_element(By.CLASS_NAME, "companyName").text
+            link = card.get_attribute("href")
 
-        if title and company:
             results.append({
-                "title": title.text.strip(),
-                "company": company.text.strip(),
-                "link": full_link,
-                "contact_email": None  # пока нет, позже можно доставать
+                "title": title,
+                "company": company,
+                "link": link,
+                "contact_email": None
             })
+        except Exception as e:
+            print(f"[WARN] Skipped job: {e}")
+            continue
 
+    driver.quit()
     return results
